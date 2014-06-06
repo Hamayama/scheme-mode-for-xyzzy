@@ -1,3 +1,28 @@
+下記のxyzzy用の scheme-mode.l を一部変更したものです。
+
+＜変更点＞
+
+(1)起動するインタプリタの受け付ける文字コードを指定可能とした
+     .xyzzyの設定に
+       (setf *scheme-run-encoding* *encoding-utf8n*)
+     を追加すると、インタプリタとUTF-8の文字コードでやりとりできます。
+     (デフォルトは Shift-JIS に設定されています)
+
+(2)リージョンの一括整形に対応
+     C-SPCでマークした位置からカーソル位置までを、
+     M-x indent-region で一括整形できるようにしました。
+
+(3)行頭が(で始まるときにインデント処理がおかしくなる件の対策
+
+(4)キーワードの設定を追加
+     if, define-module, let1 だけ追加しました。
+
+(2014-6-6)
+
+
+
+-- ここから オリジナルの情報 --
+
 project page: http://fun.sci.fukuoka-u.ac.jp/wiki/index.php?xyzzy
 
 *scheme-mode by [[matsuoka]] [#b46ffbbf]
@@ -35,19 +60,19 @@ scheme-mode for xyzzy は Scheme を書くためのメジャーモード。
  ; scheme-mode(20090118)
  ;----------------------------------------------------------------------
  (load-library "scheme-mode")
- (push '("¥¥.scm$" . scheme-mode) *auto-mode-alist*)
+ (push '("\\.scm$" . scheme-mode) *auto-mode-alist*)
  ; インタプリタの起動コマンドを *scheme-run-command* に設定 
  ; Chez Petite Scheme 向け
  (setf *scheme-run-command*
        (format
-        nil "¥"‾A¥" --eedisable --quiet"
+        nil "\"?A\" --eedisable --quiet"
         (map-slash-to-backslash "C:/Program Files/Chez Scheme Version 7.4/bin/i3nt/petite.exe")))
  ; Gauche MinGW 版向け
  ;(setf *scheme-run-command*
  ;      (format
- ;       nil "¥"‾A¥" -i"
+ ;       nil "\"?A\" -i"
  ;       (map-slash-to-backslash "C:/Gauche/bin/gosh")))
- ; インデントをタブにしたい場合
+ ; インデントをタブ じゃなく空白 にしたい場合
  ;(add-hook
  ; '*scheme-mode-hook*
  ; #'(lambda ()
@@ -90,7 +115,7 @@ export しているシンボルの一覧。
 export してない内部関数が割り当てられてます。中身はこんな感じ。
 
  (defun scheme-default-send-filter (proc sexp)
-   (format nil "‾A¥r¥n" sexp))
+   (format nil "?A\r\n" sexp))
  
  (defun scheme-default-read-filter (proc text)
    (when *scheme-run-pop-to-args*
@@ -139,7 +164,7 @@ export してない内部関数が割り当てられてます。中身はこん�
                  (with-output-to-temp-buffer ("*Scheme run*")))
                (make-process
                 (format
-                 nil "‾A"
+                 nil "?A"
                  (map-slash-to-backslash
                   (merge-pathnames "../Gauche/bin/gosh.exe -i" (si:system-root)))))))))
  (setf *scheme-process-read-filter*

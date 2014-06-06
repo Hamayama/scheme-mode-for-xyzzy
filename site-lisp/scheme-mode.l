@@ -15,6 +15,8 @@
           *scheme-indent-map*
           scheme-mode
           *scheme-run-command*
+          ;; 起動するインタプリタの受け付ける文字コードを指定可能とする(2014-6-6)
+          *scheme-run-encoding*
           *scheme-run-pop-to-args*
           make-scheme-scratch
           *scheme-mode-scratch-buffer*
@@ -27,7 +29,9 @@
           *scheme-mode-version*
           scheme-view-mode))
 
-(defvar *scheme-mode-version* "20090118")
+;; バージョン更新(2014-6-6)
+;(defvar *scheme-mode-version* "20090118")
+(defvar *scheme-mode-version* "20140606")
 ;;; scheme-mode
 (defvar *scheme-mode-map* nil)
 (unless *scheme-mode-map*
@@ -50,14 +54,30 @@
 (defvar *scheme-keyword-hash-table* nil)
 (defvar *scheme-keyword-file* "Scheme")
 (defvar *scheme-mode-scratch-buffer* "*scheme scratch*")
+;; 起動するインタプリタの受け付ける文字コードを指定可能とする(2014-6-6)
+(defvar *scheme-run-encoding* *encoding-sjis*)
+;(defvar *scheme-run-encoding* *encoding-utf8n*)
 
 (setf *scheme-indent-map*
   '(("define" 2)
-    ("begin" 2)))
-    
+    ("begin" 2)
+    ;; キーワードの設定を追加(2014-6-6)
+    ("if" 2)
+    ("define-module" 2)
+    ("let1" 2)
+   ))
+
 (defun scheme-indent-line ()
   (interactive)
   (goto-bol)
+
+  ;; 行頭が(で始まるときにインデント処理がおかしくなる件の対策(2014-6-6)
+  ;; (1度Lispモードのインデント処理を実行することで回避できる)
+  (if (looking-at "^\\s(")
+    (smart-indentation
+      (save-excursion
+        (max 0 (calc-lisp-indent (point))))))
+
   (smart-indentation
    (or (calc-scheme-mode-indent)
        (save-excursion
@@ -103,7 +123,9 @@
 
 (defun scheme-default-open-hook (buffer)
   (set-buffer buffer)
-  (make-process *scheme-run-command*))
+  ;; 起動するインタプリタの受け付ける文字コードを指定可能とする(2014-6-6)
+  ;(make-process *scheme-run-command*))
+  (make-process *scheme-run-command* :incode *scheme-run-encoding* :outcode *scheme-run-encoding*))
 
 (defun scheme-open-process ()
   (interactive)
@@ -212,6 +234,13 @@
   (setq buffer-mode 'scheme-mode)
   (use-keymap *scheme-mode-map*)
   (use-syntax-table *scheme-mode-syntax-table*)
+
+  ;; リージョンの一括整形に対応(2014-6-6)
+  ;; (C-SPCでマークした位置からカーソル位置までを、
+  ;;  M-x indent-region で一括整形できる)
+  (make-local-variable 'mode-specific-indent-command)
+  (setq mode-specific-indent-command 'scheme-indent-line)
+
   (and *scheme-keyword-file*
        (null *scheme-keyword-hash-table*)
        (setq *scheme-keyword-hash-table*

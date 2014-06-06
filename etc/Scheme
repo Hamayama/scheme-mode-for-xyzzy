@@ -19,6 +19,8 @@ letrec-syntax
 map
 with-input-from-file
 with-output-to-file
+define-module
+let1
 ;*1
 '
 -
