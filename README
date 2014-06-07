@@ -16,7 +16,9 @@
 (4)キーワードの設定を追加
      if, define-module, let1 だけ追加しました。
 
-(2014-6-6)
+Forked and modified by Hamayama.
+project page: https://github.com/Hamayama/scheme-mode-for-xyzzy
+2014-6-6
 
 
 

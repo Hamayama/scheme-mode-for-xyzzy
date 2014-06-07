@@ -5,6 +5,11 @@
 ; scheme-mode
 ; MATSUOKA Hiroshi
 ; project page: http://fun.sci.fukuoka-u.ac.jp/wiki/index.php?xyzzy
+; 2009-1-18
+;
+; Forked and modified by Hamayama.
+; project page: https://github.com/Hamayama/scheme-mode-for-xyzzy
+; 2014-6-6
 ;
 (provide "scheme-mode")
 
