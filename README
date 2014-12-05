@@ -82,13 +82,13 @@ scheme-mode for xyzzy は Scheme を書くためのメジャーモード。
  ; 評価結果を別窓にしたい場合
  (setf *scheme-run-pop-to-args* '("*scheme run*" 40 t))
  ;
- ; 以下はお好みで by Hamayama (2014-12-4)
+ ; 以下はお好みで by Hamayama (2014-12-5)
  ;
- ; リージョンの一括整形をキー割り当て
- ; (Emacsと同じ Ctrl+Alt+\ にした)
+ ; キー割り当ての追加分
  (add-hook
   '*scheme-mode-hook*
   #'(lambda ()
+      ; リージョンの一括整形 (Emacsと同じ Ctrl+Alt+\ にした)
       (define-key *scheme-mode-map* #\C-M-\\ 'indent-region)))
  ; キーワードのインデント設定の追加分
  (setf *scheme-indent-map*
@@ -113,14 +113,21 @@ scheme-mode for xyzzy は Scheme を書くためのメジャーモード。
  (add-hook
   '*scheme-mode-hook*
   #'(lambda ()
+      ; キーワード1
       (dolist
        (item
-        '("define-values" "define-macro" "define-syntax"
-          "export" "guard" "hash-table" "make"
-          "receive" "rlet1" "syntax-rules"
-          "unless" "until" "when" "while"
+        '("cond-expand" "define-values" "define-macro"
+          "define-syntax" "do" "export" "guard" "import"
+          "receive" "rlet1" "select-module" "syntax-rules"
+          "unless" "until" "use" "when" "while"
          ))
-       (setf (gethash item keyword-hash-table) 1024))))
+       (setf (gethash item keyword-hash-table) #x000400))
+      ; キーワード2
+      (dolist
+       (item
+        '("hash-table" "make" "print"
+         ))
+       (setf (gethash item keyword-hash-table) #x000600))))
 
 
 **使い方 [#m9b0a772]
